@@ -74,6 +74,7 @@ public class FragmentFeedBack extends Fragment {
     private List<String> nameList = new ArrayList<>();
     private int []circles = {R.drawable.circle_blue_filled,R.drawable.circle_brown_filled,R.drawable.circle_green_filled,R.drawable.circle_pink_filled,R.drawable.circle_orange_filled};
     private Fragment currentFragment;
+    private FloatingActionButton fab;
     public FragmentFeedBack() {
         // Required empty public constructor
     }
@@ -104,7 +105,7 @@ public class FragmentFeedBack extends Fragment {
         getFeedBackCategory();
         getFeedBack();
 
-        FloatingActionButton fab = view.findViewById(R.id.addFeedback);
+        fab = view.findViewById(R.id.addFeedback);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +156,7 @@ public class FragmentFeedBack extends Fragment {
                         etFeedBack.requestFocus();
                         return;
                     }
-                    if(selectedFeedBackCategory!=null) {
+                    if(selectedFeedBackCategory != null && loggedInUser != null) {
                         feedback = new Feedback();
                         feedback.setFeedbackCategoryId(selectedFeedBackCategory.getId());
                         feedback.setFeedback(strFeedback);
@@ -231,6 +232,11 @@ public class FragmentFeedBack extends Fragment {
                                 feedbackCategoryList.add(feedbackCategory);
                                 nameList.add(feedbackCategory.getCategory());
                             }
+                            if(feedbackCategoryList.size() == 0){
+                                fab.hide();
+                            }else{
+                                fab.show();
+                            }
                         } else {
                         }
                     }
@@ -245,43 +251,42 @@ public class FragmentFeedBack extends Fragment {
         final SweetAlertDialog pDialog;
         pDialog = Utility.createSweetAlertDialog(getContext());
         pDialog.show();
-        //TODO
-        feedBackCollectionRef
-                .whereEqualTo("batchId",loggedInUser.getCurrentBatchId())
-                .whereEqualTo("reviewerId",loggedInUser.getId())
-                .orderBy("createdDate", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        System.out.println("Feedback  -"+task.getResult().size());
-                        if (task.isSuccessful()) {
-                            if (pDialog != null) {
-                                pDialog.dismiss();
-                            }
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                feedback = document.toObject(Feedback.class);
-                                feedback.setId(document.getId());
-                                feedBackList.add(feedback);
-                            }
-                            System.out.println("FeedBack  -" + feedBackList.size());
-                            if (feedBackList.size() != 0) {
-                                feedBackAdapter = new FeedBackAdapter(feedBackList);
-                                rvFeedBack.setAdapter(feedBackAdapter);
-                                rvFeedBack.setVisibility(View.VISIBLE);
-                                llNoList.setVisibility(View.GONE);
+        if(loggedInUser != null) {
+            feedBackCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .whereEqualTo("reviewerId", loggedInUser.getId())
+                    .orderBy("createdDate", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            System.out.println("Feedback  -" + task.getResult().size());
+                            if (task.isSuccessful()) {
+                                if (pDialog != null) {
+                                    pDialog.dismiss();
+                                }
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    feedback = document.toObject(Feedback.class);
+                                    feedback.setId(document.getId());
+                                    feedBackList.add(feedback);
+                                }
+                                System.out.println("FeedBack  -" + feedBackList.size());
+                                if (feedBackList.size() != 0) {
+                                    feedBackAdapter = new FeedBackAdapter(feedBackList);
+                                    rvFeedBack.setAdapter(feedBackAdapter);
+                                    rvFeedBack.setVisibility(View.VISIBLE);
+                                    llNoList.setVisibility(View.GONE);
+                                } else {
+                                    rvFeedBack.setVisibility(View.GONE);
+                                    llNoList.setVisibility(View.VISIBLE);
+                                }
                             } else {
                                 rvFeedBack.setVisibility(View.GONE);
                                 llNoList.setVisibility(View.VISIBLE);
                             }
-                        } else {
-                            rvFeedBack.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
                         }
-                    }
-                });
-        // [END get_all_users]
-
+                    });
+        }
     }
 
     class FeedBackAdapter extends RecyclerView.Adapter<FeedBackAdapter.MyViewHolder> {

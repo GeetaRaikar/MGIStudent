@@ -97,84 +97,83 @@ public class FragmentProfile extends Fragment {
         isAddressEdited = false;
         btUpdateProfile = view.findViewById(R.id.btUpdateProfile);
         btUpdateProfile.setVisibility(View.INVISIBLE);
-        String emailId;
         ivProfilePic = view.findViewById(R.id.ivProfilePic);
         tvStudentName = view.findViewById(R.id.tvStudentName);
         tvBatchName = view.findViewById(R.id.tvBatchName);
         tvSectionName = view.findViewById(R.id.tvSectionName);
         tvName = ((TextView) view.findViewById(R.id.tvName));
-
-        String imageUrl = loggedInUser.getImageUrl();
-        System.out.println("imageUrl " + imageUrl);
-        Glide.with(this)
-                .load(imageUrl)
-                .fitCenter()
-                .apply(RequestOptions.circleCropTransform())
-                .placeholder(R.drawable.ic_profile_large)
-                .into(ivProfilePic);
-
-
-        tvStudentName.setText("" + loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
-        batchDocRef = batchCollectionRef.document("/" + loggedInUser.getCurrentBatchId());
-        batchDocRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        batch = documentSnapshot.toObject(Batch.class);
-                        batch.setId(documentSnapshot.getId());
-                        tvBatchName.setText("" + batch.getName());
-                    }
-                })
-
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-
-
-        sectionDocRef = sectionCollectionRef.document("/" + loggedInUser.getCurrentSectionId());
-        sectionDocRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        section = documentSnapshot.toObject(Section.class);
-                        section.setId(documentSnapshot.getId());
-                        tvSectionName.setText(" - " + section.getName());
-                    }
-                })
-
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
         etMobileNumber = view.findViewById(R.id.etMobileNumber);
-        etMobileNumber.setText(loggedInUser.getMobileNumber());
-
-        //System.out.println("Initial Mobile Number "+mobileNum);
         etEmail = view.findViewById(R.id.etEmail);
-        emailId = loggedInUser.getEmailId();
-        if (TextUtils.isEmpty(emailId)) {
-            String emailIdUnavailable = getString(R.string.unavailable);
-            etEmail.setHint(emailIdUnavailable);
-        } else {
-            etEmail.setText(emailId);
-        }
-
         etFatherName = view.findViewById(R.id.etFatherName);
-
-        etFatherName.setText(loggedInUser.getFirstName());
-
         etAddress = view.findViewById(R.id.etAddress);
 
-        if (!TextUtils.isEmpty(loggedInUser.getAddress())) {
-            etAddress.setText(loggedInUser.getAddress());
-        }
+        if(loggedInUser != null) {
+            String imageUrl = loggedInUser.getImageUrl();
+            System.out.println("imageUrl " + imageUrl);
+            Glide.with(this)
+                    .load(imageUrl)
+                    .fitCenter()
+                    .apply(RequestOptions.circleCropTransform())
+                    .placeholder(R.drawable.ic_profile_large)
+                    .into(ivProfilePic);
 
-        tvName.setText(loggedInUser.getFirstName());
+
+            tvStudentName.setText("" + loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
+            batchDocRef = batchCollectionRef.document("/" + loggedInUser.getCurrentBatchId());
+            batchDocRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            batch = documentSnapshot.toObject(Batch.class);
+                            batch.setId(documentSnapshot.getId());
+                            tvBatchName.setText("" + batch.getName());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+
+            sectionDocRef = sectionCollectionRef.document("/" + loggedInUser.getCurrentSectionId());
+            sectionDocRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            section = documentSnapshot.toObject(Section.class);
+                            section.setId(documentSnapshot.getId());
+                            tvSectionName.setText(" - " + section.getName());
+                        }
+                    })
+
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+            etMobileNumber.setText(loggedInUser.getMobileNumber());
+
+            String emailId = loggedInUser.getEmailId();
+            if (TextUtils.isEmpty(emailId)) {
+                String emailIdUnavailable = getString(R.string.unavailable);
+                etEmail.setHint(emailIdUnavailable);
+            } else {
+                etEmail.setText(emailId);
+            }
+
+
+            etFatherName.setText(loggedInUser.getFirstName());
+
+            if (!TextUtils.isEmpty(loggedInUser.getAddress())) {
+                etAddress.setText(loggedInUser.getAddress());
+            }
+
+            tvName.setText(loggedInUser.getFirstName());
+        }
 
         ImageView ivEditEmail = view.findViewById(R.id.ivEditEmail);
         ivEditEmail.setOnClickListener(new View.OnClickListener() {
@@ -241,7 +240,9 @@ public class FragmentProfile extends Fragment {
         btUpdateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateUserProfile();
+                if(loggedInUser != null) {
+                    updateUserProfile();
+                }
             }
         });
 

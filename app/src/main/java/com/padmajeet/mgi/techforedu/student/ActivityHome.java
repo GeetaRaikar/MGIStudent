@@ -49,13 +49,13 @@ public class ActivityHome extends AppCompatActivity {
 
     private Gson gson;
     private Student loggedInUser;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DrawerLayout drawer;
-    SessionManager sessionManager;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DrawerLayout drawer;
+    private SessionManager sessionManager;
     private static final String uniqueWorkName = "com.padmajeet.eduapp.kiddie.parent.util.NotificaionWorker";
     private static final long repeatIntervalMin = 60;
     private static final long flexIntervalMin = 10;
-    SweetAlertDialog dialog;
+    private SweetAlertDialog dialog;
     private NotificationManagerCompat notificationManagerCompat;
 
     private static final String CHANNEL_ID="Kiddies";

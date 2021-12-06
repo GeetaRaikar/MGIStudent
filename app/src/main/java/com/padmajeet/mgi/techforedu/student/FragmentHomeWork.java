@@ -66,7 +66,7 @@ public class FragmentHomeWork extends Fragment {
     private SessionManager sessionManager;
     private Gson gson;
     private String academicYearId;
-    private String schoolId;
+    private String instituteId;
     private Student loggedInUser;
     private SweetAlertDialog pDialog;
     private FirebaseFirestore db=FirebaseFirestore.getInstance();
@@ -132,7 +132,7 @@ public class FragmentHomeWork extends Fragment {
         gson = Utility.getGson();
         String studentJson = sessionManager.getString("loggedInUser");
         loggedInUser = gson.fromJson(studentJson, Student.class);
-        schoolId = sessionManager.getString("schoolId");
+        instituteId = sessionManager.getString("instituteId");
         academicYearId = sessionManager.getString("academicYearId");
         System.out.println("academicYearId  "+academicYearId);
         System.out.println("loggedInUser.getCurrentBatchId()  "+loggedInUser.getCurrentBatchId());

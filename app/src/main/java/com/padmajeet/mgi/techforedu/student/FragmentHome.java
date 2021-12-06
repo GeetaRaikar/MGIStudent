@@ -103,13 +103,14 @@ public class FragmentHome extends Fragment {
 
         setSingleEvent(gridLayout);
 
-        String name=loggedInUser.getFirstName();
-        if(TextUtils.isEmpty(loggedInUser.getLastName())){
-            name=name+" "+loggedInUser.getLastName();
-        }
-        tvParentName.setText("Welcome "+name);
-
         if(loggedInUser != null) {
+
+            String name=loggedInUser.getFirstName();
+            if(TextUtils.isEmpty(loggedInUser.getLastName())){
+                name=name+" "+loggedInUser.getLastName();
+            }
+            tvParentName.setText("Welcome "+name);
+
             String imageUrl = loggedInUser.getImageUrl();
             if (TextUtils.isEmpty(imageUrl)) {
                 Glide.with(this)

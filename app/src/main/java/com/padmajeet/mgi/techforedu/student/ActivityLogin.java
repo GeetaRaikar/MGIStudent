@@ -39,30 +39,30 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class ActivityLogin extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    String mobileNumber, password;
+    private String mobileNumber, password;
     private EditText etMobileNumber, etPassword;
     private Button btnSubmit, btnVerify, btnLogin;
-    LinearLayout llOTP, llLogin;
-    SweetAlertDialog pDialog;
+    private LinearLayout llOTP, llLogin;
+    private SweetAlertDialog pDialog;
     private TextView tvFor;
-    String loggedInUserId;
+    private String loggedInUserId;
     private Student loggedInUser;
     private Gson gson = Utility.getGson();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference instituteCollectionRef = db.collection("Institute");
-    CollectionReference academicYearCollectionRef = db.collection("AcademicYear");
-    CollectionReference studentCollectionRef = db.collection("Student");
-    DocumentReference studentDocRef;
-    DocumentReference instituteDocRef;
-    Student student;
-    Institute institute;
+    private CollectionReference instituteCollectionRef = db.collection("Institute");
+    private CollectionReference academicYearCollectionRef = db.collection("AcademicYear");
+    private CollectionReference studentCollectionRef = db.collection("Student");
+    private DocumentReference studentDocRef;
+    private DocumentReference instituteDocRef;
+    private Student student;
+    private Institute institute;
     private Firebase firebase;
     private String academicYearId;
     private AcademicYear academicYear;
-    String studentId;
-    SessionManager sessionManager;
-    TextView tvName;
-    ImageView appIcon;
+    private String studentId;
+    private SessionManager sessionManager;
+    private TextView tvName;
+    private ImageView appIcon;
     // private static final String TAG = "PreSchool";
 
     @Override
@@ -111,7 +111,7 @@ public class ActivityLogin extends AppCompatActivity {
             public void onClick(View view) {
 
                 password = etPassword.getText().toString().trim();
-                if (loggedInUser.getPassword().equals(password)) {
+                if (loggedInUser != null && loggedInUser.getPassword().equals(password)) {
                     gson = Utility.getGson();
                     String loggedInAdminStr = gson.toJson(loggedInUser);
                     sessionManager.putString("loggedInUser", loggedInAdminStr);
@@ -172,7 +172,7 @@ public class ActivityLogin extends AppCompatActivity {
                             }
                             if (loggedInUser == null) {
                                 System.out.println("loggedInUser  "+loggedInUser.getFirstName());
-                                etMobileNumber.setError(getString(R.string.errInvalidMobNum));
+                                etMobileNumber.setError(getString(R.string.errRegisterMobNum));
                                 etMobileNumber.requestFocus();
                                 return;
                             } else {

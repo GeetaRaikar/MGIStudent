@@ -37,7 +37,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -92,56 +91,54 @@ public class FragmentAchievements extends Fragment {
         final SweetAlertDialog pDialog;
         pDialog = Utility.createSweetAlertDialog(getContext());
         pDialog.show();
-
-        achievementListener = achievementCollectionRef
-                .whereEqualTo("instituteId",loggedInUser.getInstituteId())
-                .orderBy("createdDate", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-                        if(achievementList.size()!=0){
-                            achievementList.clear();
-                        }
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        for (DocumentSnapshot document:queryDocumentSnapshots.getDocuments()) {
-                            achievement = document.toObject(Achievement.class);
-                            achievement.setId(document.getId());
-                            if(achievement.getVisibility().equalsIgnoreCase("AP") || achievement.getVisibility().equalsIgnoreCase("ALL")){
-                                achievementList.add(achievement);
-                            }else{
-                                if(achievement.getVisibility().equalsIgnoreCase("P")) {
-                                    if(achievement.getBatchIdList().contains(loggedInUser.getCurrentBatchId())){
-                                        achievementList.add(achievement);
+        if(loggedInUser != null) {
+            achievementListener = achievementCollectionRef
+                    .whereEqualTo("instituteId", loggedInUser.getInstituteId())
+                    .orderBy("createdDate", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (achievementList.size() != 0) {
+                                achievementList.clear();
+                            }
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                achievement = document.toObject(Achievement.class);
+                                achievement.setId(document.getId());
+                                if (achievement.getVisibility().equalsIgnoreCase("AP") || achievement.getVisibility().equalsIgnoreCase("ALL")) {
+                                    achievementList.add(achievement);
+                                } else {
+                                    if (achievement.getVisibility().equalsIgnoreCase("P")) {
+                                        if (achievement.getBatchIdList().contains(loggedInUser.getCurrentBatchId())) {
+                                            achievementList.add(achievement);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if(achievementList.size()!=0) {
-                            System.out.println("achievementList -"+achievementList.size());
-                            achievementAdapter = new AchievementAdapter(achievementList);
-                            rvAchievement.setAdapter(achievementAdapter);
-                            rvAchievement.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
-                            if(pDialog!=null && pDialog.isShowing()){
-                                pDialog.dismiss();
+                            if (achievementList.size() != 0) {
+                                System.out.println("achievementList -" + achievementList.size());
+                                achievementAdapter = new AchievementAdapter(achievementList);
+                                rvAchievement.setAdapter(achievementAdapter);
+                                rvAchievement.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
+                            } else {
+                                rvAchievement.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                                if (pDialog != null && pDialog.isShowing()) {
+                                    pDialog.dismiss();
+                                }
                             }
                         }
-                        else{
-                            rvAchievement.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
-                            if(pDialog!=null && pDialog.isShowing()){
-                                pDialog.dismiss();
-                            }
-                        }
-                    }
-                });
-        // [END get_all_users]
-
+                    });
+        }
 
     }
 

@@ -44,7 +44,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.padmajeet.mgi.techforedu.student.ActivityHome"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name="com.padmajeet.mgi.techforedu.student.ActivityForgotPassword"
             android:screenOrientation="portrait" />
         <activity android:name="com.padmajeet.mgi.techforedu.student.ActivityLogin"

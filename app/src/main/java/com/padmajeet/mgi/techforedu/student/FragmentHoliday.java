@@ -61,7 +61,7 @@ public class FragmentHoliday extends Fragment {
         String userJson=sessionManager.getString("loggedInUser");
         loggedInUser=gson.fromJson(userJson, Student.class);
         academicYearId= sessionManager.getString("academicYearId");
-        instituteId=loggedInUser.getInstituteId();
+        instituteId=sessionManager.getString("instituteId");
         System.out.println("instituteId - "+instituteId);
         System.out.println("academicYearId - "+academicYearId);
     }
@@ -89,41 +89,42 @@ public class FragmentHoliday extends Fragment {
         final SweetAlertDialog pDialog;
         pDialog = Utility.createSweetAlertDialog(getContext());
         pDialog.show();
-
-        holidayListener = holidayCollectionRef
-                .whereEqualTo("instituteId",instituteId)
-                .whereEqualTo("academicYearId",academicYearId)
-                .orderBy("fromDate", Query.Direction.DESCENDING)
-                .orderBy("toDate", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
+        if(instituteId != null) {
+            holidayListener = holidayCollectionRef
+                    .whereEqualTo("instituteId", instituteId)
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .orderBy("fromDate", Query.Direction.DESCENDING)
+                    .orderBy("toDate", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (holidayList.size() != 0) {
+                                holidayList.clear();
+                            }
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                                Holiday holiday = documentSnapshot.toObject(Holiday.class);
+                                holiday.setId(documentSnapshot.getId());
+                                holidayList.add(holiday);
+                            }
+                            System.out.println("holidayList.size() - " + holidayList.size());
+                            if (holidayList.size() != 0) {
+                                holidayAdapter = new HolidayAdapter(holidayList);
+                                rvHoliday.setAdapter(holidayAdapter);
+                                rvHoliday.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
+                            } else {
+                                rvHoliday.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                            }
                         }
-                        if(holidayList.size()!=0){
-                            holidayList.clear();
-                        }
-                        if(pDialog!=null){
-                            pDialog.dismiss();
-                        }
-                        for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots.getDocuments()) {
-                            Holiday holiday = documentSnapshot.toObject(Holiday.class);
-                            holiday.setId(documentSnapshot.getId());
-                            holidayList.add(holiday);
-                        }
-                        System.out.println("holidayList.size() - "+holidayList.size());
-                        if (holidayList.size() != 0) {
-                            holidayAdapter = new HolidayAdapter(holidayList);
-                            rvHoliday.setAdapter(holidayAdapter);
-                            rvHoliday.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
-                        } else {
-                            rvHoliday.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+                    });
+        }
     }
     @Override
     public void onStop() {

@@ -69,8 +69,8 @@ public class FragmentAttendanceSummary extends Fragment {
         gson = Utility.getGson();
         String studentJson=sessionManager.getString("loggedInUser");
         loggedInUser=gson.fromJson(studentJson, Student.class);
-        academicYearId= sessionManager.getString("academicYearId");
-        instituteId=loggedInUser.getInstituteId();
+        academicYearId = sessionManager.getString("academicYearId");
+        instituteId = sessionManager.getString("instituteId");
         System.out.println("instituteId - "+instituteId);
         System.out.println("academicYearId - "+academicYearId);
         String attendanceListJson = sessionManager.getString("attendanceList");
@@ -152,7 +152,7 @@ public class FragmentAttendanceSummary extends Fragment {
     }
     private void getSubjectsOfBatch() {
         System.out.println("Result SubjectService- "+subjectList.size());
-        if(subjectList.size() == 0){
+        if(subjectList.size() == 0 || subjectList == null){
             rlAttendanceSummary.setVisibility(View.GONE);
             llNoList.setVisibility(View.VISIBLE);
         }
@@ -190,21 +190,28 @@ public class FragmentAttendanceSummary extends Fragment {
 
                 subjectAttendanceList.add(subjectAttendance);
             }
-            addSubjectRows();
-            //PieEntry pieEntry = new PieEntry(attendancePercList);
-            PieDataSet dataSet = new PieDataSet(attendancePercList, "- Subjects");
-            dataSet.setSliceSpace(3f);
-            dataSet.setSelectionShift(5f);
-            dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-            //dataSet.setSelectionShift(0f);
+            if(attendanceList.size() > 0) {
+                llNoList.setVisibility(View.GONE);
+                rlAttendanceSummary.setVisibility(View.VISIBLE);
+                addSubjectRows();
+                //PieEntry pieEntry = new PieEntry(attendancePercList);
+                PieDataSet dataSet = new PieDataSet(attendancePercList, "- Subjects");
+                dataSet.setSliceSpace(3f);
+                dataSet.setSelectionShift(5f);
+                dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                //dataSet.setSelectionShift(0f);
 
-            PieData data = new PieData(dataSet);
-            data.setValueFormatter(new PercentFormatter());
-            data.setValueTextSize(11f);
-            data.setValueTextColor(Color.WHITE);
-            chart.setData(data);
+                PieData data = new PieData(dataSet);
+                data.setValueFormatter(new PercentFormatter());
+                data.setValueTextSize(11f);
+                data.setValueTextColor(Color.WHITE);
+                chart.setData(data);
 
-            chart.invalidate();
+                chart.invalidate();
+            }else{
+                llNoList.setVisibility(View.VISIBLE);
+                rlAttendanceSummary.setVisibility(View.GONE);
+            }
         }
     }
 

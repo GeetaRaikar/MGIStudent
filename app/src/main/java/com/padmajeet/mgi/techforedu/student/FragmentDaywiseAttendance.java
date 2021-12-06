@@ -46,7 +46,7 @@ public class FragmentDaywiseAttendance extends Fragment {
     private List<Attendance> attendanceList;
     private List<Subject> subjectList;
     private HashMap<Integer,List<Attendance>> attendanceHashMap = new HashMap<>();
-    private List<List<Attendance>> daywiseAttendanceList = new ArrayList<>();
+    private List<List<Attendance>> dayWiseAttendanceList = new ArrayList<>();
     private List<Integer> countList = new ArrayList<>();
     private SessionManager sessionManager;
     public FragmentDaywiseAttendance() {
@@ -61,7 +61,7 @@ public class FragmentDaywiseAttendance extends Fragment {
         String userJson=sessionManager.getString("loggedInUser");
         loggedInUser=gson.fromJson(userJson, Student.class);
         academicYearId= sessionManager.getString("academicYearId");
-        instituteId=loggedInUser.getInstituteId();
+        instituteId = sessionManager.getString("instituteId");
         System.out.println("FragmentDaywiseAttendance");
         String attendanceListJson = sessionManager.getString("attendanceList");
         System.out.println("attendanceListJson - "+attendanceListJson);
@@ -88,7 +88,7 @@ public class FragmentDaywiseAttendance extends Fragment {
         ivNoData = view.findViewById(R.id.ivNoData);
         //getAttendanceOfStudent();
 
-        if(attendanceList!=null){
+        if(attendanceList!=null && attendanceList.size() > 0){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             int k =0;
             for(int i=0;i<attendanceList.size();i++){
@@ -112,13 +112,13 @@ public class FragmentDaywiseAttendance extends Fragment {
                     String keyDate = sdf.format(attendanceDate);
 
                     attendanceHashMap.put(k,tempAttendanceList);
-                    daywiseAttendanceList.add(tempAttendanceList);
+                    dayWiseAttendanceList.add(tempAttendanceList);
                     countList.add(k);
                     k++;
                 }
             }
             System.out.println("HashMap size - "+attendanceHashMap.size());
-            if(daywiseAttendanceList.size()>0){
+            if(dayWiseAttendanceList.size()>0){
 
                 AttendanceAdaptor attendanceAdaptor = new AttendanceAdaptor(getContext());
                 lvDayWiseAttendance.setAdapter(attendanceAdaptor);
@@ -182,13 +182,13 @@ public class FragmentDaywiseAttendance extends Fragment {
                             String keyDate = sdf.format(attendanceDate);
 
                             attendanceHashMap.put(k,tempAttendanceList);
-                            daywiseAttendanceList.add(tempAttendanceList);
+                            dayWiseAttendanceList.add(tempAttendanceList);
                             countList.add(k);
                             k++;
                         }
                     }
                     System.out.println("HashMap size - "+attendanceHashMap.size());
-                    if(daywiseAttendanceList.size()>0){
+                    if(dayWiseAttendanceList.size()>0){
 
                         AttendanceAdaptor attendanceAdaptor = new AttendanceAdaptor(getContext());
                         lvDayWiseAttendance.setAdapter(attendanceAdaptor);

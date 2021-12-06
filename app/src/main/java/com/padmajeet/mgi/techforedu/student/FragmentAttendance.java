@@ -62,64 +62,66 @@ public class FragmentAttendance extends Fragment {
         if(pDialog!=null && !pDialog.isShowing()){
             pDialog.show();
         }
-        attendanceCollectionRef
-                .whereEqualTo("academicYearId", academicYearId)
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .whereEqualTo("studentId", loggedInUser.getId())
-                .orderBy("date", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
+        if(loggedInUser != null && academicYearId != null) {
+            attendanceCollectionRef
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .whereEqualTo("studentId", loggedInUser.getId())
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            attendanceList.clear();
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                Attendance attendance = document.toObject(Attendance.class);
+                                attendance.setId(document.getId());
+                                attendanceList.add(attendance);
+                            }
+                            sessionManager.putString("attendanceList", gson.toJson(attendanceList));
                         }
-                        attendanceList.clear();
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            Attendance attendance = document.toObject(Attendance.class);
-                            attendance.setId(document.getId());
-                            attendanceList.add(attendance);
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
                         }
-                        sessionManager.putString("attendanceList",gson.toJson(attendanceList));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
+                    });
+            subjectCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (subjectList.size() > 0) {
+                                subjectList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                Subject subject = document.toObject(Subject.class);
+                                subject.setId(document.getId());
+                                subjectList.add(subject);
+                            }
+                            System.out.println("Result SubjectService- " + subjectList.size());
+                            sessionManager.putString("subjectList", gson.toJson(subjectList));
                         }
-                    }
-                });
-        subjectCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
                         }
-                        if(subjectList.size() > 0) {
-                            subjectList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            Subject subject = document.toObject(Subject.class);
-                            subject.setId(document.getId());
-                            subjectList.add(subject);
-                        }
-                        System.out.println("Result SubjectService- "+subjectList.size());
-                        sessionManager.putString("subjectList",gson.toJson(subjectList));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     @Override
@@ -136,7 +138,7 @@ public class FragmentAttendance extends Fragment {
         String studentJson = sessionManager.getString("loggedInUser");
         loggedInUser = gson.fromJson(studentJson, Student.class);
         academicYearId = sessionManager.getString("academicYearId");
-        instituteId=sessionManager.getString("instituteId");
+        instituteId = sessionManager.getString("instituteId");
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

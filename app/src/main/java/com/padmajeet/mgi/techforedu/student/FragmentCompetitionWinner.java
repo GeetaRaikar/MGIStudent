@@ -102,41 +102,41 @@ public class FragmentCompetitionWinner extends Fragment {
         if(pDialog!=null) {
             pDialog.show();
         }
-        competitionListener = competitionCollectionRef
-                .whereEqualTo("academicYearId",academicYearId)
-                .whereEqualTo("batchId",loggedInUser.getCurrentBatchId())
-                .orderBy("fromDate", Query.Direction.DESCENDING)
-                .orderBy("toDate", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-                        if(competitionList.size()!=0){
-                            competitionList.clear();
-                        }
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        for (DocumentSnapshot document:queryDocumentSnapshots.getDocuments()) {
-                            competition = document.toObject(Competition.class);
-                            competition.setId(document.getId());
-                            competitionList.add(competition);
-                        }
-                        if(competitionList.size()>0){
-                            getCompetitionEventList();
-                        }
-                        else{
-                            expListView.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
-                            if(pDialog!=null){
+        if(loggedInUser != null && academicYearId != null) {
+            competitionListener = competitionCollectionRef
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .orderBy("fromDate", Query.Direction.DESCENDING)
+                    .orderBy("toDate", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (competitionList.size() != 0) {
+                                competitionList.clear();
+                            }
+                            if (pDialog != null) {
                                 pDialog.dismiss();
                             }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                competition = document.toObject(Competition.class);
+                                competition.setId(document.getId());
+                                competitionList.add(competition);
+                            }
+                            if (competitionList.size() > 0) {
+                                getCompetitionEventList();
+                            } else {
+                                expListView.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                                if (pDialog != null) {
+                                    pDialog.dismiss();
+                                }
+                            }
                         }
-                    }
-                });
-        // [END get_all_users]
+                    });
+        }
     }
 
     private void getCompetitionEventList() {

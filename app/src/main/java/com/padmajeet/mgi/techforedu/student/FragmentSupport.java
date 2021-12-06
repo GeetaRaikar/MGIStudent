@@ -55,31 +55,33 @@ public class FragmentSupport extends Fragment {
         ((ActivityHome)getActivity()).getSupportActionBar().setTitle(getString(R.string.support));
         btnAdminNumber = view.findViewById(R.id.btnAdminNumber);
         btnAdminEmail = view.findViewById(R.id.btnAdminEmail);
-        if(pDialog == null && !pDialog.isShowing()) {
-            pDialog.show();
-        }
-        instituteCollectionRef
-                .document(instituteId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(pDialog != null && pDialog.isShowing()){
-                            pDialog.dismiss();
+        if(instituteId != null) {
+            if (pDialog == null && !pDialog.isShowing()) {
+                pDialog.show();
+            }
+            instituteCollectionRef
+                    .document(instituteId)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
+                            institute = documentSnapshot.toObject(Institute.class);
+                            if (institute != null) {
+                                btnAdminNumber.setText("" + institute.getPrimaryContactNumber());
+                                btnAdminEmail.setText("" + institute.getEmailId());
+                            }
                         }
-                        institute= documentSnapshot.toObject(Institute.class);
-                        if(institute!=null){
-                            btnAdminNumber.setText("" + institute.getPrimaryContactNumber());
-                            btnAdminEmail.setText("" + institute.getEmailId());
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
 
-                    }
-                });
+                        }
+                    });
+        }
 
         btnAdminNumber.setOnClickListener(new View.OnClickListener() {
             @Override

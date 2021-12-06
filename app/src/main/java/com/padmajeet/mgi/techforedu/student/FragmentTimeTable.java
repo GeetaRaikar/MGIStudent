@@ -154,98 +154,100 @@ public class FragmentTimeTable extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        pDialog=Utility.createSweetAlertDialog(getContext());
-        if(pDialog!=null && !pDialog.isShowing()){
-            pDialog.show();
+        if(instituteId != null) {
+            pDialog=Utility.createSweetAlertDialog(getContext());
+            if(pDialog!=null && !pDialog.isShowing()){
+                pDialog.show();
+            }
+            staffCollectionRef
+                    .whereEqualTo("instituteId", instituteId)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (staffList.size() > 0) {
+                                staffList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                staff = document.toObject(Staff.class);
+                                staff.setId(document.getId());
+                                staffList.add(staff);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                        }
+                    });
+            if (pDialog != null && !pDialog.isShowing()) {
+                pDialog.show();
+            }
+            subjectCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (subjectList.size() > 0) {
+                                subjectList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                subject = document.toObject(Subject.class);
+                                subject.setId(document.getId());
+                                subjectList.add(subject);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                        }
+                    });
+            if (pDialog != null && !pDialog.isShowing()) {
+                pDialog.show();
+            }
+            periodCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (periodList.size() > 0) {
+                                periodList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                period = document.toObject(Period.class);
+                                period.setId(document.getId());
+                                periodList.add(period);
+                            }
+                            getTimeTableForBatch();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                        }
+                    });
         }
-        staffCollectionRef
-                .whereEqualTo("instituteId", instituteId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        if(staffList.size() > 0) {
-                            staffList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            staff = document.toObject(Staff.class);
-                            staff.setId(document.getId());
-                            staffList.add(staff);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                    }
-                });
-        if(pDialog!=null && !pDialog.isShowing()){
-            pDialog.show();
-        }
-        subjectCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        if(subjectList.size() > 0) {
-                            subjectList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            subject = document.toObject(Subject.class);
-                            subject.setId(document.getId());
-                            subjectList.add(subject);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                    }
-                });
-        if(pDialog!=null && !pDialog.isShowing()){
-            pDialog.show();
-        }
-        periodCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        if(periodList.size() > 0) {
-                            periodList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            period = document.toObject(Period.class);
-                            period.setId(document.getId());
-                            periodList.add(period);
-                        }
-                        getTimeTableForBatch();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                    }
-                });
     }
 
     @Override
@@ -341,93 +343,95 @@ public class FragmentTimeTable extends Fragment {
     }
 
     private void  getTimeTableForBatch() {
-        timeTableCollectionRef
-                .whereEqualTo("academicYearId", academicYearId)
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .whereEqualTo("date", selectedDate)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(timeTableList.size()>0) {
-                            timeTableList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            timeTable = document.toObject(TimeTable.class);
-                            timeTable.setId(document.getId());
-                            timeTableList.add(timeTable);
-                        }
-                        System.out.println("timeTableList => "+timeTableList.size());
-                        if(timeTableList.size() > 0){
-                            ArrayList<TimeTableForPeriod> timeTableForPeriodArrayList = new ArrayList<>();
-                            for(TimeTable t:timeTableList) {
-                                TimeTableForPeriod timeTableForPeriod = new TimeTableForPeriod();
-                                timeTableForPeriod.setId(t.getId());
-                                timeTableForPeriod.setSubject(t.getSubjectId());
-                                timeTableForPeriod.setStaff(t.getStaffId());
-                                System.out.println("period id => "+t.getPeriodId());
-                                for (Period p : periodList) {
-                                    if (p.getId().equals(t.getPeriodId())) {
-                                        timeTableForPeriod.setPeriod(p.getNumber());
-                                        timeTableForPeriod.setDurationInMin(p.getDuration());
-                                        timeTableForPeriod.setFromTime(p.getFromTime());
-                                        timeTableForPeriod.setToTime(p.getToTime());
-                                        break;
-                                    }
-                                }
-                                timeTableForPeriodArrayList.add(timeTableForPeriod);
+        if(academicYearId != null && loggedInUser != null) {
+            timeTableCollectionRef
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .whereEqualTo("date", selectedDate)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (timeTableList.size() > 0) {
+                                timeTableList.clear();
                             }
-                            for(TimeTableForPeriod timeTableForPeriod:timeTableForPeriodArrayList) {
-                                for (Subject s : subjectList) {
-                                    if (s.getId().equals(timeTableForPeriod.getSubject())) {
-                                        timeTableForPeriod.setSubject(s.getName());
-                                        break;
-                                    }
-                                }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                timeTable = document.toObject(TimeTable.class);
+                                timeTable.setId(document.getId());
+                                timeTableList.add(timeTable);
                             }
-                            for(TimeTableForPeriod timeTableForPeriod:timeTableForPeriodArrayList) {
-                                for (Staff st : staffList) {
-                                    if (st.getId().equals(timeTableForPeriod.getStaff())) {
-                                        String name = st.getFirstName();
-                                        if (!TextUtils.isEmpty(st.getLastName())) {
-                                            name = name + " " + st.getLastName();
+                            System.out.println("timeTableList => " + timeTableList.size());
+                            if (timeTableList.size() > 0) {
+                                ArrayList<TimeTableForPeriod> timeTableForPeriodArrayList = new ArrayList<>();
+                                for (TimeTable t : timeTableList) {
+                                    TimeTableForPeriod timeTableForPeriod = new TimeTableForPeriod();
+                                    timeTableForPeriod.setId(t.getId());
+                                    timeTableForPeriod.setSubject(t.getSubjectId());
+                                    timeTableForPeriod.setStaff(t.getStaffId());
+                                    System.out.println("period id => " + t.getPeriodId());
+                                    for (Period p : periodList) {
+                                        if (p.getId().equals(t.getPeriodId())) {
+                                            timeTableForPeriod.setPeriod(p.getNumber());
+                                            timeTableForPeriod.setDurationInMin(p.getDuration());
+                                            timeTableForPeriod.setFromTime(p.getFromTime());
+                                            timeTableForPeriod.setToTime(p.getToTime());
+                                            break;
                                         }
-                                        timeTableForPeriod.setStaff(name);
-                                        break;
+                                    }
+                                    timeTableForPeriodArrayList.add(timeTableForPeriod);
+                                }
+                                for (TimeTableForPeriod timeTableForPeriod : timeTableForPeriodArrayList) {
+                                    for (Subject s : subjectList) {
+                                        if (s.getId().equals(timeTableForPeriod.getSubject())) {
+                                            timeTableForPeriod.setSubject(s.getName());
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            System.out.println("timeTableForPeriodArrayList => "+timeTableForPeriodArrayList.size());
-                            Collections.sort(timeTableForPeriodArrayList, new Comparator<TimeTableForPeriod>() {
-                                @Override
-                                public int compare(TimeTableForPeriod t1, TimeTableForPeriod t2) {
-                                    try {
-                                        return new SimpleDateFormat("hh:mm a").parse(t1.getFromTime()).compareTo(new SimpleDateFormat("hh:mm a").parse(t2.getFromTime()));
-                                    } catch (ParseException e) {
-                                        return 0;
+                                for (TimeTableForPeriod timeTableForPeriod : timeTableForPeriodArrayList) {
+                                    for (Staff st : staffList) {
+                                        if (st.getId().equals(timeTableForPeriod.getStaff())) {
+                                            String name = st.getFirstName();
+                                            if (!TextUtils.isEmpty(st.getLastName())) {
+                                                name = name + " " + st.getLastName();
+                                            }
+                                            timeTableForPeriod.setStaff(name);
+                                            break;
+                                        }
                                     }
                                 }
-                            });
-                            for(int i=0;i<timeTableForPeriodArrayList.size();i++){
-                                System.out.println("fromTime "+timeTableForPeriodArrayList.get(i).getFromTime());
-                            }
-                            timeTableAdapter = new TimeTableAdapter(timeTableForPeriodArrayList);
-                            rvTimeTable.setAdapter(timeTableAdapter);
-                            rvTimeTable.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
+                                System.out.println("timeTableForPeriodArrayList => " + timeTableForPeriodArrayList.size());
+                                Collections.sort(timeTableForPeriodArrayList, new Comparator<TimeTableForPeriod>() {
+                                    @Override
+                                    public int compare(TimeTableForPeriod t1, TimeTableForPeriod t2) {
+                                        try {
+                                            return new SimpleDateFormat("hh:mm a").parse(t1.getFromTime()).compareTo(new SimpleDateFormat("hh:mm a").parse(t2.getFromTime()));
+                                        } catch (ParseException e) {
+                                            return 0;
+                                        }
+                                    }
+                                });
+                                for (int i = 0; i < timeTableForPeriodArrayList.size(); i++) {
+                                    System.out.println("fromTime " + timeTableForPeriodArrayList.get(i).getFromTime());
+                                }
+                                timeTableAdapter = new TimeTableAdapter(timeTableForPeriodArrayList);
+                                rvTimeTable.setAdapter(timeTableAdapter);
+                                rvTimeTable.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
 
-                        }else{
-                            rvTimeTable.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
+                            } else {
+                                rvTimeTable.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        pDialog.dismiss();
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            pDialog.dismiss();
+                        }
+                    });
+        }
     }
 
     class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.MyViewHolder> {

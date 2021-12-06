@@ -64,7 +64,7 @@ public class FragmentSubject extends Fragment {
         String studentJson = sessionManager.getString("loggedInUser");
         loggedInUser = gson.fromJson(studentJson, Student.class);
         academicYearId = sessionManager.getString("academicYearId");
-        instituteId=sessionManager.getString("instituteId");
+        instituteId = sessionManager.getString("instituteId");
     }
     public FragmentSubject() {
         // Required empty public constructor
@@ -93,38 +93,40 @@ public class FragmentSubject extends Fragment {
         if(pDialog!=null && !pDialog.isShowing()){
             pDialog.show();
         }
-        subjectListener=subjectCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .orderBy("createdDate", Query.Direction.ASCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
+        if(loggedInUser != null) {
+            subjectListener = subjectCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .orderBy("createdDate", Query.Direction.ASCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (subjectList.size() != 0) {
+                                subjectList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
+                                Subject subject = document.toObject(Subject.class);
+                                subject.setId(document.getId());
+                                subjectList.add(subject);
+                            }
+                            if (subjectList.size() != 0) {
+                                subjectAdapter = new SubjectAdapter(subjectList);
+                                rvSubject.setAdapter(subjectAdapter);
+                                rvSubject.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
+                            } else {
+                                rvSubject.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                            }
                         }
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        if (subjectList.size() != 0) {
-                            subjectList.clear();
-                        }
-                        for (DocumentSnapshot document:queryDocumentSnapshots.getDocuments()) {
-                            // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
-                            Subject subject = document.toObject(Subject.class);
-                            subject.setId(document.getId());
-                            subjectList.add(subject);
-                        }
-                        if (subjectList.size() != 0) {
-                            subjectAdapter = new SubjectAdapter(subjectList);
-                            rvSubject.setAdapter(subjectAdapter);
-                            rvSubject.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
-                        } else {
-                            rvSubject.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.MyViewHolder> {

@@ -70,10 +70,11 @@ public class FragmentMessage extends Fragment {
         loggedInUser = gson.fromJson(loggedInUserJson,Student.class);
         academicYearId = sessionManager.getString("academicYearId");
         instituteId=sessionManager.getString("instituteId");
-
         pDialog=Utility.createSweetAlertDialog(getContext());
-        studentBatchId = loggedInUser.getCurrentBatchId();
-        studentId = loggedInUser.getId();
+        if(loggedInUser != null) {
+            studentBatchId = loggedInUser.getCurrentBatchId();
+            studentId = loggedInUser.getId();
+        }
     }
     public FragmentMessage() {
         // Required empty public constructor
@@ -101,60 +102,62 @@ public class FragmentMessage extends Fragment {
         if(pDialog!=null && !pDialog.isShowing()){
             pDialog.show();
         }
-        messageListener = messageCollectionRef
-                .whereEqualTo("academicYearId", academicYearId)
-                .whereEqualTo("recipientType", "P")
-                .orderBy("createdDate", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-                        if (messageList.size() != 0) {
-                            messageList.clear();
-                        }
-                        for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots.getDocuments()){
-                            // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
-                            Message message = documentSnapshot.toObject(Message.class);
-                            message.setId(documentSnapshot.getId());
+        if(academicYearId != null) {
+            messageListener = messageCollectionRef
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .whereEqualTo("recipientType", "P")
+                    .orderBy("createdDate", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (messageList.size() != 0) {
+                                messageList.clear();
+                            }
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                                // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
+                                Message message = documentSnapshot.toObject(Message.class);
+                                message.setId(documentSnapshot.getId());
 
-                            if (message.getCategory().equals("A")) {//Messages of All class
-                                messageList.add(message);
-                            } else if (message.getCategory().equals("C")) {//Specific to the student's class
+                                if (message.getCategory().equals("A")) {//Messages of All class
+                                    messageList.add(message);
+                                } else if (message.getCategory().equals("C")) {//Specific to the student's class
 
-                                List<String> batchIdList = message.getBatchIdList();
-                                for (String batchId : batchIdList) {
-                                    if (batchId.equals(studentBatchId)) {
-                                        messageList.add(message);
-                                        break;
+                                    List<String> batchIdList = message.getBatchIdList();
+                                    for (String batchId : batchIdList) {
+                                        if (batchId.equals(studentBatchId)) {
+                                            messageList.add(message);
+                                            break;
+                                        }
                                     }
-                                }
-                            } else if (message.getCategory().equals("S")) {//Specific to the student
-                                List<String> recipientIdList = message.getRecipientIdList();
-                                for (String recipientId : recipientIdList) {
-                                    if (recipientId.equals(studentId)) {
-                                        messageList.add(message);
-                                        break;
+                                } else if (message.getCategory().equals("S")) {//Specific to the student
+                                    List<String> recipientIdList = message.getRecipientIdList();
+                                    for (String recipientId : recipientIdList) {
+                                        if (recipientId.equals(studentId)) {
+                                            messageList.add(message);
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if (messageList.size() != 0) {
-                            messageAdapter = new MessageAdapter(messageList);
-                            rvMessage.setAdapter(messageAdapter);
-                            rvMessage.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
-                        } else {
-                            rvMessage.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
+                            if (messageList.size() != 0) {
+                                messageAdapter = new MessageAdapter(messageList);
+                                rvMessage.setAdapter(messageAdapter);
+                                rvMessage.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
+                            } else {
+                                rvMessage.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                            }
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
                         }
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {

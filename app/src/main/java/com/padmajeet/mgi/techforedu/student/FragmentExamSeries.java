@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -74,29 +73,31 @@ public class FragmentExamSeries extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        subjectListener=subjectCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .orderBy("createdDate", Query.Direction.ASCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
+        if(loggedInUser != null) {
+            subjectListener = subjectCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .orderBy("createdDate", Query.Direction.ASCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (pDialog != null) {
+                                pDialog.dismiss();
+                            }
+                            if (subjectList.size() != 0) {
+                                subjectList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
+                                Subject subject = document.toObject(Subject.class);
+                                subject.setId(document.getId());
+                                subjectList.add(subject);
+                            }
                         }
-                        if (pDialog != null) {
-                            pDialog.dismiss();
-                        }
-                        if (subjectList.size() != 0) {
-                            subjectList.clear();
-                        }
-                        for (DocumentSnapshot document:queryDocumentSnapshots.getDocuments()) {
-                            // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
-                            Subject subject = document.toObject(Subject.class);
-                            subject.setId(document.getId());
-                            subjectList.add(subject);
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     @Override
@@ -113,7 +114,7 @@ public class FragmentExamSeries extends Fragment {
         String studentJson = sessionManager.getString("loggedInUser");
         loggedInUser = gson.fromJson(studentJson, Student.class);
         academicYearId = sessionManager.getString("academicYearId");
-        instituteId=sessionManager.getString("instituteId");
+        instituteId = sessionManager.getString("instituteId");
     }
 
     @Override
@@ -142,74 +143,78 @@ public class FragmentExamSeries extends Fragment {
         return (int) (pixels * scale + 0.5f);
     }
     private void  getExamSeriesOfBatch() {
-        examSeriesListener = examSeriesCollectionRef
-                .whereEqualTo("academicYearId", academicYearId)
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .orderBy("createdDate", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
+        if(loggedInUser != null && academicYearId != null) {
+            examSeriesListener = examSeriesCollectionRef
+                    .whereEqualTo("academicYearId", academicYearId)
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .orderBy("createdDate", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                return;
+                            }
+                            if (examSeriesList.size() != 0) {
+                                examSeriesList.clear();
+                            }
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                                // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
+                                ExamSeries examSeries = documentSnapshot.toObject(ExamSeries.class);
+                                examSeries.setId(documentSnapshot.getId());
+                                examSeriesList.add(examSeries);
+                            }
+                            if (examSeriesList.size() != 0) {
+                                getAllExamOfExamSeriesOfBatch();
+                            } else {
+                                rvExamSeries.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
+                            }
                         }
-                        if (examSeriesList.size() != 0) {
-                            examSeriesList.clear();
-                        }
-                        for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots.getDocuments()){
-                            // Log.d(TAG, document.getId()document.getId() + " => " + document.getData());
-                            ExamSeries examSeries = documentSnapshot.toObject(ExamSeries.class);
-                            examSeries.setId(documentSnapshot.getId());
-                            examSeriesList.add(examSeries);
-                        }
-                        if (examSeriesList.size() != 0) {
-                            getAllExamOfExamSeriesOfBatch();
-                        } else {
-                            rvExamSeries.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+                    });
+        }
     }
     public void getAllExamOfExamSeriesOfBatch(){
-        examCollectionRef
-                .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
-                .orderBy("date", Query.Direction.ASCENDING)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(examList.size()>0) {
-                            examList.clear();
-                        }
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                            Exam exam = document.toObject(Exam.class);
-                            exam.setId(document.getId());
-                            examList.add(exam);
-                        }
-                        if(examList.size() > 0){
-                            for(Exam ex:examList) {
-                                for (Subject sub : subjectList) {
-                                    if(ex.getSubjectId().equals(sub.getId())){
-                                        ex.setSubjectId(sub.getName());
-                                        break;
+        if(loggedInUser != null ) {
+            examCollectionRef
+                    .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                    .orderBy("date", Query.Direction.ASCENDING)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if (examList.size() > 0) {
+                                examList.clear();
+                            }
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                Exam exam = document.toObject(Exam.class);
+                                exam.setId(document.getId());
+                                examList.add(exam);
+                            }
+                            if (examList.size() > 0) {
+                                for (Exam ex : examList) {
+                                    for (Subject sub : subjectList) {
+                                        if (ex.getSubjectId().equals(sub.getId())) {
+                                            ex.setSubjectId(sub.getName());
+                                            break;
+                                        }
                                     }
                                 }
+                                examSeriesAdapter = new ExamSeriesAdapter(examSeriesList);
+                                rvExamSeries.setAdapter(examSeriesAdapter);
+                                rvExamSeries.setVisibility(View.VISIBLE);
+                                llNoList.setVisibility(View.GONE);
+                            } else {
+                                rvExamSeries.setVisibility(View.GONE);
+                                llNoList.setVisibility(View.VISIBLE);
                             }
-                            examSeriesAdapter = new ExamSeriesAdapter(examSeriesList);
-                            rvExamSeries.setAdapter(examSeriesAdapter);
-                            rvExamSeries.setVisibility(View.VISIBLE);
-                            llNoList.setVisibility(View.GONE);
-                        }else {
-                            rvExamSeries.setVisibility(View.GONE);
-                            llNoList.setVisibility(View.VISIBLE);
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                        }
+                    });
+        }
     }
     BottomSheetDialog bottomSheetDialog;
     class ExamSeriesAdapter extends RecyclerView.Adapter<ExamSeriesAdapter.MyViewHolder> {

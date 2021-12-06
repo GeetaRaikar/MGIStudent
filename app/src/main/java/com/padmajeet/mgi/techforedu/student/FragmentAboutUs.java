@@ -77,71 +77,71 @@ public class FragmentAboutUs extends Fragment {
         if(pDialog == null && !pDialog.isShowing()){
             pDialog.show();
         }
-        //System.out.println("schoolId - "+schoolId);
-        instituteCollectionRef
-                .document(instituteId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (pDialog != null && pDialog.isShowing()) {
-                            pDialog.dismiss();
-                        }
-                        institute = documentSnapshot.toObject(Institute.class);
-                        //System.out.println("school - "+school);
-                        if (institute != null) {
-                            tvName.setText("" + institute.getName());
-                            if (!TextUtils.isEmpty(institute.getAboutInstitute())) {
-                                tvDesc.setText("" + institute.getAboutInstitute());
+        if(instituteId != null) {
+            instituteCollectionRef
+                    .document(instituteId)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
                             }
-                            String address = institute.getAddress();
-                            if (!(address.isEmpty())) {
-                                cvAddress.setVisibility(View.VISIBLE);
-                                tvAddress1.setText("" + address);
-                                tvAddress2.setText("");
-                                tvAddress3.setText("");
-                            }
-                            String primaryContact = institute.getPrimaryContactNumber();
-                            if (!TextUtils.isEmpty(primaryContact)) {
-                                tvContact1.setText("" + primaryContact);
-                            }
-                            String secondaryContact = institute.getSecondaryContactNumber();
-                            if (!TextUtils.isEmpty(secondaryContact)) {
-                                tvContact2.setText("" + secondaryContact);
-                            }
-                            String email = institute.getEmailId();
-                            if (!TextUtils.isEmpty(email)) {
-                                tvEmail.setText("" + email);
-                            }
-                            String mission = institute.getMission();
-                            String vision = institute.getVision();
-                            tvYear.setText("" + institute.getYearOfEstablishment());
-                            if (!TextUtils.isEmpty(mission) || !TextUtils.isEmpty(vision)) {
-                                cvMission.setVisibility(View.VISIBLE);
-                                if (TextUtils.isEmpty(mission)) {
-                                    tvMissionLbl.setVisibility(View.GONE);
-                                } else {
-                                    tvMission.setText("" + mission);
+                            institute = documentSnapshot.toObject(Institute.class);
+                            //System.out.println("school - "+school);
+                            if (institute != null) {
+                                tvName.setText("" + institute.getName());
+                                if (!TextUtils.isEmpty(institute.getAboutInstitute())) {
+                                    tvDesc.setText("" + institute.getAboutInstitute());
                                 }
-                                if (TextUtils.isEmpty(vision)) {
-                                    tvVisionLbl.setVisibility(View.GONE);
-                                } else {
-                                    tvVision.setText("" + vision);
+                                String address = institute.getAddress();
+                                if (!(address.isEmpty())) {
+                                    cvAddress.setVisibility(View.VISIBLE);
+                                    tvAddress1.setText("" + address);
+                                    tvAddress2.setText("");
+                                    tvAddress3.setText("");
+                                }
+                                String primaryContact = institute.getPrimaryContactNumber();
+                                if (!TextUtils.isEmpty(primaryContact)) {
+                                    tvContact1.setText("" + primaryContact);
+                                }
+                                String secondaryContact = institute.getSecondaryContactNumber();
+                                if (!TextUtils.isEmpty(secondaryContact)) {
+                                    tvContact2.setText("" + secondaryContact);
+                                }
+                                String email = institute.getEmailId();
+                                if (!TextUtils.isEmpty(email)) {
+                                    tvEmail.setText("" + email);
+                                }
+                                String mission = institute.getMission();
+                                String vision = institute.getVision();
+                                tvYear.setText("" + institute.getYearOfEstablishment());
+                                if (!TextUtils.isEmpty(mission) || !TextUtils.isEmpty(vision)) {
+                                    cvMission.setVisibility(View.VISIBLE);
+                                    if (TextUtils.isEmpty(mission)) {
+                                        tvMissionLbl.setVisibility(View.GONE);
+                                    } else {
+                                        tvMission.setText("" + mission);
+                                    }
+                                    if (TextUtils.isEmpty(vision)) {
+                                        tvVisionLbl.setVisibility(View.GONE);
+                                    } else {
+                                        tvVision.setText("" + vision);
+                                    }
                                 }
                             }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (pDialog != null && pDialog.isShowing()) {
-                            pDialog.dismiss();
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (pDialog != null && pDialog.isShowing()) {
+                                pDialog.dismiss();
+                            }
                         }
-                    }
-                });
+                    });
 
-
+        }
         return view;
     }
 

@@ -63,7 +63,7 @@
          String studentJson = sessionManager.getString("loggedInUser");
          loggedInUser = gson.fromJson(studentJson, Student.class);
          academicYearId = sessionManager.getString("academicYearId");
-         instituteId=sessionManager.getString("instituteId");
+         instituteId = sessionManager.getString("instituteId");
          System.out.println("Student -"+loggedInUser.getFirstName());
          System.out.println("academicYearId -"+academicYearId);
          System.out.println("instituteId -"+instituteId);
@@ -88,46 +88,46 @@
      }
 
      private void getCalendarOfBatch() {
-
          final SweetAlertDialog pDialog;
          pDialog = Utility.createSweetAlertDialog(getContext());
          pDialog.show();
-         calendarListener = calendarCollectionRef
-                 .whereEqualTo("academicYearId",academicYearId)
-                 .whereEqualTo("batchId",loggedInUser.getCurrentBatchId())
-                 .orderBy("fromDate", Query.Direction.ASCENDING)
-                 .orderBy("toDate", Query.Direction.ASCENDING)
-                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                     @Override
-                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                         if (e != null) {
-                             return;
+         if(loggedInUser != null && academicYearId != null) {
+             calendarListener = calendarCollectionRef
+                     .whereEqualTo("academicYearId", academicYearId)
+                     .whereEqualTo("batchId", loggedInUser.getCurrentBatchId())
+                     .orderBy("fromDate", Query.Direction.ASCENDING)
+                     .orderBy("toDate", Query.Direction.ASCENDING)
+                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                         @Override
+                         public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                             if (e != null) {
+                                 return;
+                             }
+                             if (calendarList.size() != 0) {
+                                 calendarList.clear();
+                             }
+                             if (pDialog != null) {
+                                 pDialog.dismiss();
+                             }
+                             for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                 calendar = document.toObject(Calendar.class);
+                                 calendar.setId(document.getId());
+                                 calendarList.add(calendar);
+                             }
+                             System.out.println("Calendar  -" + calendarList.size());
+                             if (calendarList.size() != 0) {
+                                 calendarAdapter = new CalendarAdapter(calendarList);
+                                 rvCalendar.setAdapter(calendarAdapter);
+                                 calendarAdapter.notifyDataSetChanged();
+                                 rvCalendar.setVisibility(View.VISIBLE);
+                                 llNoList.setVisibility(View.GONE);
+                             } else {
+                                 rvCalendar.setVisibility(View.GONE);
+                                 llNoList.setVisibility(View.VISIBLE);
+                             }
                          }
-                         if(calendarList.size()!=0){
-                             calendarList.clear();
-                         }
-                         if (pDialog != null) {
-                             pDialog.dismiss();
-                         }
-                         for (DocumentSnapshot document:queryDocumentSnapshots.getDocuments()) {
-                             calendar = document.toObject(Calendar.class);
-                             calendar.setId(document.getId());
-                             calendarList.add(calendar);
-                         }
-                         System.out.println("Calendar  -" + calendarList.size());
-                         if (calendarList.size() != 0) {
-                             calendarAdapter = new CalendarAdapter(calendarList);
-                             rvCalendar.setAdapter(calendarAdapter);
-                             calendarAdapter.notifyDataSetChanged();
-                             rvCalendar.setVisibility(View.VISIBLE);
-                             llNoList.setVisibility(View.GONE);
-                         } else {
-                             rvCalendar.setVisibility(View.GONE);
-                             llNoList.setVisibility(View.VISIBLE);
-                         }
-                     }
-                 });
-         // [END get_all_users]
+                     });
+         }
 
      }
 

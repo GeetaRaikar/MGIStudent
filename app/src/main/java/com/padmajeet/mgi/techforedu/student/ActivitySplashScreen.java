@@ -22,11 +22,11 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class ActivitySplashScreen extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Gson gson = Utility.getGson();
-    SweetAlertDialog pDialog;
-    SessionManager sessionManager;
-    DocumentReference studentDocRef;
-    Student loggedInUser;
-    String loggedInUserId;
+    private SweetAlertDialog pDialog;
+    private SessionManager sessionManager;
+    private DocumentReference studentDocRef;
+    private Student loggedInUser;
+    private String loggedInUserId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
