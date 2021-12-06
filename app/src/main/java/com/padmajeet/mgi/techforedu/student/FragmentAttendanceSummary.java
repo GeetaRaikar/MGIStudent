@@ -48,11 +48,8 @@ public class FragmentAttendanceSummary extends Fragment {
     private List<Attendance> attendanceList;
     private List<Subject> subjectList;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference subjectCollectionRef= db.collection("Subject");
     private LinearLayout rlAttendanceSummary;
     private LinearLayout llNoList;
-    private ImageView ivNoData;
-    private TextView tvNoData;
     private PieChart chart;
     private TableLayout tblSubject;
     private List<SubjectAttendance> subjectAttendanceList= new ArrayList<>();
@@ -71,13 +68,13 @@ public class FragmentAttendanceSummary extends Fragment {
         loggedInUser=gson.fromJson(studentJson, Student.class);
         academicYearId = sessionManager.getString("academicYearId");
         instituteId = sessionManager.getString("instituteId");
-        System.out.println("instituteId - "+instituteId);
-        System.out.println("academicYearId - "+academicYearId);
+        System.out.println("1) instituteId - "+instituteId);
+        System.out.println("2) academicYearId - "+academicYearId);
         String attendanceListJson = sessionManager.getString("attendanceList");
-        System.out.println("attendanceListJson - "+attendanceListJson);
+        System.out.println("3) attendanceListJson - "+attendanceListJson);
         attendanceList = gson.fromJson(attendanceListJson,new TypeToken<List<Attendance>>(){}.getType());
         String subjectListJson = sessionManager.getString("subjectList");
-        System.out.println("subjectListJson - "+subjectListJson);
+        System.out.println("4) subjectListJson - "+subjectListJson);
         subjectList = gson.fromJson(subjectListJson,new TypeToken<List<Subject>>(){}.getType());
     }
 
@@ -96,8 +93,6 @@ public class FragmentAttendanceSummary extends Fragment {
         tblSubject = view.findViewById(R.id.tblSubject);
         chart = view.findViewById(R.id.chartAttendanceSummary);
         llNoList = view.findViewById(R.id.llNoList);
-        tvNoData = view.findViewById(R.id.tvNoData);
-        ivNoData = view.findViewById(R.id.ivNoData);
 
         //chart.setCenterTextTypeface(tfLight);
         //chart.setCenterText(generateCenterSpannableText());

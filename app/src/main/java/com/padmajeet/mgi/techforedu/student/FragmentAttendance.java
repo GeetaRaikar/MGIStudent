@@ -43,7 +43,6 @@ public class FragmentAttendance extends Fragment {
     private Gson gson;
     private Student loggedInUser;
     private SessionManager sessionManager;
-    private AcademicYear currentAcademicYear;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference attendanceCollectionRef = db.collection("Attendance");
     private CollectionReference subjectCollectionRef = db.collection("Subject");
@@ -81,6 +80,7 @@ public class FragmentAttendance extends Fragment {
                                 attendance.setId(document.getId());
                                 attendanceList.add(attendance);
                             }
+                            System.out.println("attendanceList => "+attendanceList.toString());
                             sessionManager.putString("attendanceList", gson.toJson(attendanceList));
                         }
                     })
@@ -109,7 +109,7 @@ public class FragmentAttendance extends Fragment {
                                 subject.setId(document.getId());
                                 subjectList.add(subject);
                             }
-                            System.out.println("Result SubjectService- " + subjectList.size());
+                            System.out.println("subjectList => "+subjectList.toString());
                             sessionManager.putString("subjectList", gson.toJson(subjectList));
                         }
                     })
