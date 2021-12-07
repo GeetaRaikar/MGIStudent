@@ -37,20 +37,10 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvParentName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="16sp" />
-
-                <TextView
                     android:id="@+id/tvName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:drawableLeft="@drawable/ic_student_small"
-                    android:drawablePadding="@dimen/drawablePaddingSize"
                     android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 

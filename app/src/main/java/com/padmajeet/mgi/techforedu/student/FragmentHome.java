@@ -42,7 +42,7 @@ import androidx.fragment.app.FragmentTransaction;
  * A simple {@link Fragment} subclass.
  */
 public class FragmentHome extends Fragment {
-    private TextView tvParentName,tvStudentName,tvClass;
+    private TextView tvName,tvClass;
     private ImageView ivProfilePic;
     private FirebaseFirestore db= FirebaseFirestore.getInstance();
     private CollectionReference studentCollectionRef=db.collection("Student");
@@ -94,8 +94,7 @@ public class FragmentHome extends Fragment {
         PublisherAdRequest adRequest = new PublisherAdRequest.Builder().build();
         mPublisherAdView.loadAd(adRequest);
         ivProfilePic = view.findViewById(R.id.ivProfilePic);
-        tvParentName =view.findViewById(R.id.tvParentName);
-        tvStudentName =view.findViewById(R.id.tvName);
+        tvName =view.findViewById(R.id.tvName);
         tvClass = view.findViewById(R.id.tvClass);
 
         gridLayout = view.findViewById(R.id.mainGrid);
@@ -109,7 +108,7 @@ public class FragmentHome extends Fragment {
             if(TextUtils.isEmpty(loggedInUser.getLastName())){
                 name=name+" "+loggedInUser.getLastName();
             }
-            tvParentName.setText("Welcome "+name);
+            tvName.setText("Welcome "+name);
 
             String imageUrl = loggedInUser.getImageUrl();
             if (TextUtils.isEmpty(imageUrl)) {
@@ -127,7 +126,6 @@ public class FragmentHome extends Fragment {
                         .placeholder(R.drawable.ic_profile_large)
                         .into(ivProfilePic);
             }
-            tvStudentName.setText(""+loggedInUser.getFirstName()+" "+loggedInUser.getLastName());
 
             batchDocRef = batchCollectionRef.document("/" + loggedInUser.getCurrentBatchId());
             batchDocRef.get()
