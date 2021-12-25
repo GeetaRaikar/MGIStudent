@@ -39,7 +39,7 @@ public class ActivitySplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(loggedInUserId)) {
-                    validateParent(loggedInUserId);
+                    validateStudent(loggedInUserId);
                 }
                 else {
                     Intent i = new Intent(ActivitySplashScreen.this, ActivityLogin.class);
@@ -51,7 +51,7 @@ public class ActivitySplashScreen extends AppCompatActivity {
         }, 1000);
     }
 
-    private void validateParent(String documentId) {
+    private void validateStudent(String documentId) {
         studentDocRef = db.document("Student/" + documentId);
         studentDocRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -60,6 +60,7 @@ public class ActivitySplashScreen extends AppCompatActivity {
                         System.out.println("Data -key -" + documentSnapshot.getId() + " value -" + documentSnapshot.getData());
                         loggedInUserId = documentSnapshot.getId();
                         loggedInUser = documentSnapshot.toObject(Student.class);
+                        loggedInUser.setId(loggedInUserId);
                         System.out.println("Data -key -" + documentSnapshot.getId() + " value -" + loggedInUser);
                         System.out.println("loggedInUser -" + loggedInUser.getFirstName());
                         SessionManager sessionManager = new SessionManager(ActivitySplashScreen.this);

@@ -47,10 +47,10 @@ public class FragmentProfile extends Fragment {
 
     private View view;
     private Student loggedInUser;
-    private EditText etMobileNumber, etFatherName, etMotherName, etEmail, etAddress;
+    private EditText etMobileNumber, etEmail, etAddress;
     private ImageView ivProfilePic;
     private Button btUpdateProfile;
-    private boolean isEmailEdited, isFatherNameEdited, isMotherNameEdited, isAddressEdited;
+    private boolean isEmailEdited, isAddressEdited;
     private Fragment currentFragment;
     private Gson gson;
     private String academicYearId;
@@ -92,8 +92,6 @@ public class FragmentProfile extends Fragment {
 
         currentFragment = this;
         isEmailEdited = false;
-        isFatherNameEdited = false;
-        isMotherNameEdited = false;
         isAddressEdited = false;
         btUpdateProfile = view.findViewById(R.id.btUpdateProfile);
         btUpdateProfile.setVisibility(View.INVISIBLE);
@@ -104,7 +102,6 @@ public class FragmentProfile extends Fragment {
         tvName = ((TextView) view.findViewById(R.id.tvName));
         etMobileNumber = view.findViewById(R.id.etMobileNumber);
         etEmail = view.findViewById(R.id.etEmail);
-        etFatherName = view.findViewById(R.id.etFatherName);
         etAddress = view.findViewById(R.id.etAddress);
 
         if(loggedInUser != null) {
@@ -165,9 +162,6 @@ public class FragmentProfile extends Fragment {
                 etEmail.setText(emailId);
             }
 
-
-            etFatherName.setText(loggedInUser.getFirstName());
-
             if (!TextUtils.isEmpty(loggedInUser.getAddress())) {
                 etAddress.setText(loggedInUser.getAddress());
             }
@@ -183,17 +177,6 @@ public class FragmentProfile extends Fragment {
                 btUpdateProfile.setVisibility(View.VISIBLE);
                 etEmail.setEnabled(true);
                 etEmail.requestFocus();
-            }
-        });
-
-        ImageView ivEditFatherName = view.findViewById(R.id.ivEditFatherName);
-        ivEditFatherName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isFatherNameEdited = true;
-                btUpdateProfile.setVisibility(View.VISIBLE);
-                etFatherName.setEnabled(true);
-                etFatherName.requestFocus();
             }
         });
 
@@ -260,16 +243,6 @@ public class FragmentProfile extends Fragment {
                 loggedInUser.setEmailId(updatedEmail);
             }
         }
-        if (isFatherNameEdited) {
-            String updatedFatherName = etFatherName.getText().toString().trim();
-            if (TextUtils.isEmpty(updatedFatherName)) {
-                etFatherName.setError("Enter Father Name");
-                etFatherName.requestFocus();
-                canSave = false;
-            } else {
-                loggedInUser.setFirstName(updatedFatherName);
-            }
-        }
         if (isAddressEdited) {
             String updatedAddress = etAddress.getText().toString().trim();
             if (!TextUtils.isEmpty(updatedAddress)) {
@@ -280,10 +253,9 @@ public class FragmentProfile extends Fragment {
         if (canSave) {
             loggedInUser.setModifiedDate(new Date());
             etEmail.setEnabled(false);
-            etFatherName.setEnabled(false);
-            etMotherName.setEnabled(false);
             etAddress.setEnabled(false);
             btUpdateProfile.setVisibility(View.GONE);
+            System.out.println("loggedInUser.getId() "+loggedInUser.getId());
             //Update
             studentCollectionRef.document(loggedInUser.getId()).set(loggedInUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override

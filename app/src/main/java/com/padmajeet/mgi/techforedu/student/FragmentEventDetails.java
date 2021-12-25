@@ -245,7 +245,8 @@ public class FragmentEventDetails extends Fragment {
             @Override
             public void onClick(View view) {
                 responseMap.put(loggedInUserId,response);
-                selectedEvent.setParentResponses(responseMap);
+                System.out.println("responseMap => "+responseMap.size());
+                selectedEvent.setStudentResponses(responseMap);
                 eventCollectionRef.document(selectedEvent.getId())
                         .set(selectedEvent)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

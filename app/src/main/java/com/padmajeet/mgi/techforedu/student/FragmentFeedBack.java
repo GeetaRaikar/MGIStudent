@@ -128,18 +128,14 @@ public class FragmentFeedBack extends Fragment {
             etFeedBack=view.findViewById(R.id.etFeedBack);
 
             if(feedbackCategoryList.size()!=0) {
-
-
                 adaptor = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, nameList);
                 adaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spFeedBackCategory.setAdapter(adaptor);
-
                 spFeedBackCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         selectedFeedBackCategory = feedbackCategoryList.get(position);
                     }
-
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
 
@@ -152,21 +148,27 @@ public class FragmentFeedBack extends Fragment {
                 public void onClick(View view) {
                     String strFeedback = etFeedBack.getText().toString().trim();
                     if (TextUtils.isEmpty(strFeedback)) {
-                        etFeedBack.setError("Enter FeedBack");
+                        etFeedBack.setError("Please enter valid note");
                         etFeedBack.requestFocus();
                         return;
+                    }else{
+                        if(Utility.isTextValid(strFeedback)){
+                            etFeedBack.setError("Please enter valid note");
+                            etFeedBack.requestFocus();
+                            return;
+                        }
                     }
                     if(selectedFeedBackCategory != null && loggedInUser != null) {
                         feedback = new Feedback();
                         feedback.setFeedbackCategoryId(selectedFeedBackCategory.getId());
                         feedback.setFeedback(strFeedback);
-                        feedback.setReviewerType("P");
+                        feedback.setReviewerType("S");
                         feedback.setReviewerId(loggedInUser.getId());
                         feedback.setBatchId(loggedInUser.getCurrentBatchId());
                         feedback.setCreatorId(loggedInUser.getId());
                         feedback.setModifierId(loggedInUser.getId());
-                        feedback.setCreatorType("P");
-                        feedback.setModifierType("P");
+                        feedback.setCreatorType("S");
+                        feedback.setModifierType("S");
 
                         addFeedback();
                         etFeedBack.setText("");
@@ -296,7 +298,7 @@ public class FragmentFeedBack extends Fragment {
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public TextView tvFeedbackCategory, tvFeedback,tvDate,tvSubjectHeader;
             public LinearLayout llImage;
-            public ImageView ivEditNote;
+            public ImageView ivEditNote,ivDeleteNote;
 
             public MyViewHolder(View view) {
                 super(view);
@@ -306,7 +308,7 @@ public class FragmentFeedBack extends Fragment {
                 llImage = view.findViewById(R.id.llImage);
                 tvSubjectHeader= view.findViewById(R.id.tvSubjectHeader);
                 ivEditNote = view.findViewById(R.id.ivEditNote);
-
+                ivDeleteNote = view.findViewById(R.id.ivDeleteNote);
             }
         }
 
@@ -357,9 +359,6 @@ public class FragmentFeedBack extends Fragment {
                         }
                     }
                     spFeedBackCategory.setSelection(categorySpinnerPos);
-
-
-
                     spFeedBackCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -388,17 +387,21 @@ public class FragmentFeedBack extends Fragment {
 
                                     String updatedNote = etFeedBack.getText().toString().trim();
                                     if(TextUtils.isEmpty(updatedNote)){
-                                        etFeedBack.setError("Please enter the note");
+                                        etFeedBack.setError("Please enter valid note");
                                         etFeedBack.requestFocus();
                                         return;
+                                    }else{
+                                        if(Utility.isTextValid(updatedNote)){
+                                            etFeedBack.setError("Please enter valid note");
+                                            etFeedBack.requestFocus();
+                                            return;
+                                        }
                                     }
-
-
                                     feedBack.setFeedback(updatedNote);
                                     feedBack.setFeedbackCategoryId(updatedFeedbackCategory.getId());
                                     feedBack.setModifiedDate(new Date());
                                     feedBack.setModifierId(loggedInUser.getId());
-                                    feedBack.setModifierType("P");
+                                    feedBack.setModifierType("S");
                                     //TODO
                                     //feedBack.setStatus("O");
                                     final SweetAlertDialog pDialog;
@@ -419,6 +422,45 @@ public class FragmentFeedBack extends Fragment {
                                         }
                                     });
 
+                                }
+                            });
+                    dialog.getWindow().setGravity(Gravity.CENTER);
+                    dialog.setCancelable(false);
+                    dialog.show();
+                }
+            });
+
+            holder.ivDeleteNote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SweetAlertDialog dialog = new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
+                            .setConfirmText("Confirm")
+                            .setContentText("Delete note permanently?")
+                            .setCancelButton("Cancel", new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    sDialog.dismissWithAnimation();
+                                }
+                            })
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    feedBackCollectionRef.document(feedBack.getId())
+                                            .delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    sDialog.dismissWithAnimation();
+                                                    getFragmentManager().beginTransaction().detach(currentFragment).attach(currentFragment).commit();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    sDialog.dismissWithAnimation();
+                                                    Toast.makeText(getContext(), "Delete unsuccessful", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                 }
                             });
                     dialog.getWindow().setGravity(Gravity.CENTER);

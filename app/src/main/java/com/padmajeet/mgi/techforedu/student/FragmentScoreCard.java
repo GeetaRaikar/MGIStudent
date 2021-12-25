@@ -338,21 +338,27 @@ public class FragmentScoreCard extends Fragment {
         public void onBindViewHolder(MyViewHolder holder, final int position) {
             final ExamSeries examSeries = examSeriesList.get(position);
             holder.tvESName.setText(""+examSeries.getName());
-            String date=Utility.formatDateToString(examSeries.getFromDate().getTime());
-            if(examSeries.getToDate() != null){
-                date = date + " to " +Utility.formatDateToString(examSeries.getToDate().getTime());
-            }
-            holder.tvESDate.setText(""+date);
-            if(examSeries.getToDate().getTime() > new Date().getTime()){
-                holder.tvStatus.setVisibility(View.GONE);
-            }else{
-                holder.tvStatus.setVisibility(View.VISIBLE);
+            if(examSeries.getFromDate() != null) {
+                String date = Utility.formatDateToString(examSeries.getFromDate().getTime());
+                if (examSeries.getToDate() != null) {
+                    date = date + " to " + Utility.formatDateToString(examSeries.getToDate().getTime());
+                }
+                holder.tvESDate.setText(""+date);
+                if(examSeries.getToDate().getTime() > new Date().getTime()){
+                    holder.tvStatus.setVisibility(View.GONE);
+                }else{
+                    holder.tvStatus.setVisibility(View.VISIBLE);
+                }
             }
             List<Exam> filterExamList = new ArrayList<>();
             for(Exam exam:examList){
                 if(examSeries.getId().equals(exam.getExamSeriesId())){
                     filterExamList.add(exam);
                 }
+            }
+            if(filterExamList.size() == 0){
+                holder.tvStatus.setText("Note : Exams are not yet declared.");
+                holder.tvStatus.setVisibility(View.VISIBLE);
             }
             List<ScoreDetails> filteredScoreDetailsList = new ArrayList<>();
             for(ScoreCard scoreCard:scoreCardList){
@@ -368,6 +374,12 @@ public class FragmentScoreCard extends Fragment {
                         scoreDetails.setResult(scoreCard.getResult());
                         filteredScoreDetailsList.add(scoreDetails);
                     }
+                }
+            }
+            if(filterExamList.size() != 0){
+                if(filteredScoreDetailsList.size() == 0) {
+                    holder.tvStatus.setText("Note : Scorecards are not yet declared.");
+                    holder.tvStatus.setVisibility(View.VISIBLE);
                 }
             }
             // Chart settings
@@ -411,6 +423,7 @@ public class FragmentScoreCard extends Fragment {
             }else{
                 holder.rvScoreCardExam.setVisibility(View.GONE);
                 holder.chartSubjectWiseScore.setVisibility(View.GONE);
+
             }
         }
 

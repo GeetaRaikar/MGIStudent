@@ -6,9 +6,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
@@ -27,7 +29,9 @@ public class FragmentAboutUs extends Fragment {
 
     private Institute institute;
     private View view;
-    private TextView tvName, tvDesc, tvYear, tvAddress1, tvAddress2, tvAddress3, tvContact1, tvContact2, tvEmail, tvMission, tvVision, tvMissionLbl, tvVisionLbl;
+    private TextView tvName, tvDesc, tvYear, tvAddress1, tvAddress2, tvAddress3, tvContact1;
+    private TextView tvContact2, tvEmail, tvMission, tvVision, tvMissionLbl, tvVisionLbl;
+    private ImageView ivLogo;
     private LinearLayout llEstablishedYear;
     private MaterialCardView cvAddress, cvContact, cvMission;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -73,6 +77,7 @@ public class FragmentAboutUs extends Fragment {
         tvVision = view.findViewById(R.id.tvVision);
         tvMissionLbl = view.findViewById(R.id.tvMissionLbl);
         tvVisionLbl = view.findViewById(R.id.tvVisionLbl);
+        ivLogo = view.findViewById(R.id.ivLogo);
 
         if(pDialog == null && !pDialog.isShowing()){
             pDialog.show();
@@ -90,32 +95,51 @@ public class FragmentAboutUs extends Fragment {
                             institute = documentSnapshot.toObject(Institute.class);
                             //System.out.println("school - "+school);
                             if (institute != null) {
+                                if(institute.getLogoImagePath() != null){
+                                    Glide.with(getContext())
+                                            .load(institute.getLogoImagePath())
+                                            .fitCenter()
+                                            .placeholder(R.drawable.mgi_logo)
+                                            .into(ivLogo);
+                                }
                                 tvName.setText("" + institute.getName());
                                 if (!TextUtils.isEmpty(institute.getAboutInstitute())) {
-                                    tvDesc.setText("" + institute.getAboutInstitute());
+                                    tvDesc.setText("" + institute.getAboutInstitute().trim());
                                 }
-                                String address = institute.getAddress();
+                                String address = institute.getAddress().trim();
                                 if (!(address.isEmpty())) {
                                     cvAddress.setVisibility(View.VISIBLE);
                                     tvAddress1.setText("" + address);
-                                    tvAddress2.setText("");
-                                    tvAddress3.setText("");
+                                    tvAddress2.setVisibility(View.GONE);
+                                    tvAddress3.setVisibility(View.GONE);
                                 }
-                                String primaryContact = institute.getPrimaryContactNumber();
-                                if (!TextUtils.isEmpty(primaryContact)) {
-                                    tvContact1.setText("" + primaryContact);
-                                }
-                                String secondaryContact = institute.getSecondaryContactNumber();
-                                if (!TextUtils.isEmpty(secondaryContact)) {
-                                    tvContact2.setText("" + secondaryContact);
-                                }
-                                String email = institute.getEmailId();
-                                if (!TextUtils.isEmpty(email)) {
-                                    tvEmail.setText("" + email);
+                                if(TextUtils.isEmpty(institute.getPrimaryContactNumber())
+                                        && TextUtils.isEmpty(institute.getSecondaryContactNumber())
+                                        && TextUtils.isEmpty(institute.getEmailId())){
+                                    cvContact.setVisibility(View.GONE);
+                                }else{
+                                    cvContact.setVisibility(View.VISIBLE);
+                                    String primaryContact = institute.getPrimaryContactNumber();
+                                    if (!TextUtils.isEmpty(primaryContact)) {
+                                        tvContact1.setText("" + primaryContact);
+                                    }
+                                    String secondaryContact = institute.getSecondaryContactNumber();
+                                    if (!TextUtils.isEmpty(secondaryContact)) {
+                                        tvContact2.setText("" + secondaryContact);
+                                    }
+                                    String email = institute.getEmailId();
+                                    if (!TextUtils.isEmpty(email)) {
+                                        tvEmail.setText("" + email);
+                                    }
                                 }
                                 String mission = institute.getMission();
                                 String vision = institute.getVision();
-                                tvYear.setText("" + institute.getYearOfEstablishment());
+                                if(institute.getYearOfEstablishment() == 0){
+                                    llEstablishedYear.setVisibility(View.GONE);
+                                }else{
+                                    llEstablishedYear.setVisibility(View.VISIBLE);
+                                    tvYear.setText("" + institute.getYearOfEstablishment());
+                                }
                                 if (!TextUtils.isEmpty(mission) || !TextUtils.isEmpty(vision)) {
                                     cvMission.setVisibility(View.VISIBLE);
                                     if (TextUtils.isEmpty(mission)) {

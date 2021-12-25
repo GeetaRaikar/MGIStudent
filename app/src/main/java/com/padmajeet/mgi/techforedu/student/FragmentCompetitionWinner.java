@@ -383,6 +383,7 @@ public class FragmentCompetitionWinner extends Fragment {
             }
             TextView tvName = convertView.findViewById(R.id.tvName);
             TextView tvDate = convertView.findViewById(R.id.tvDate);
+            TextView tvNoCompetitionWinner = convertView.findViewById(R.id.tvNoCompetitionWinner);
             tvName.setText("" + competition.getName());
             String date = Utility.formatDateToString(competition.getFromDate().getTime());
             if (competition.getToDate() != null) {
@@ -390,9 +391,10 @@ public class FragmentCompetitionWinner extends Fragment {
             }
             tvDate.setText("" + date);
             final View finalConvertView = convertView;
-            ImageView ivProfilePic = finalConvertView
-                    .findViewById(R.id.ivProfilePic);
-
+            ImageView ivProfilePic = finalConvertView.findViewById(R.id.ivProfilePic);
+            if(this._listDataChild.get(this._listDataHeader.get(groupPosition)).size() == 0){
+                tvNoCompetitionWinner.setVisibility(View.VISIBLE);
+            }
             return convertView;
         }
 
