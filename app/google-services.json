@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:538760622600:android:92b43aa1a712cfa24f57bd",
+        "android_client_info": {
+          "package_name": "com.padmajeet.mgi.techforedu.faculty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538760622600-s2a8sreh392avr5th2kiignsu7gost85.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.padmajeet.mgi.techforedu.faculty",
+            "certificate_hash": "6d08c6a79023064fa863fcc7b2b41ad4ec9c911b"
+          }
+        },
+        {
+          "client_id": "538760622600-9prpogqds13ji9q1cfa9uk40afkblv2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW13kI1-Ae0ySgxSlMuqIw7jW9F5afVes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538760622600-9prpogqds13ji9q1cfa9uk40afkblv2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:538760622600:android:de90dfae0603b4944f57bd",
         "android_client_info": {
           "package_name": "com.padmajeet.mgi.techforedu.parent"
@@ -52,7 +89,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "538760622600-jq6k3k7v1mnhs1o9qarkmn39qj3b0jhh.apps.googleusercontent.com",
+          "client_id": "538760622600-kh9qkriigrkjavm9hcogot16nnkjej61.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.padmajeet.mgi.techforedu.student",
